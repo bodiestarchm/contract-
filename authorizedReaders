@@ -1,0 +1,48 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract AdvancedStorage {
+    address public owner;
+    string public storedData;
+    mapping(address => bool) public authorizedReaders;
+
+    event DataStored(address indexed user, string indexed key, string data);
+    event AccessGranted(address indexed reader);
+    event AccessRevoked(address indexed reader);
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only the owner can call this function");
+        _;
+    }
+
+    modifier onlyAuthorizedReader() {
+        require(authorizedReaders[msg.sender], "Unauthorized reader");
+        _;
+    }
+
+    constructor() {
+        owner = msg.sender;
+        authorizedReaders[msg.sender] = true; // Owner has access by default
+    }
+
+    function set(string memory key, string memory newData) external onlyOwner {
+        storedData = newData;
+        emit DataStored(msg.sender, key, newData);
+    }
+
+    function get() external view onlyAuthorizedReader returns (string memory) {
+        return storedData;
+    }
+
+    function grantAccess(address reader) external onlyOwner {
+        require(!authorizedReaders[reader], "Reader already authorized");
+        authorizedReaders[reader] = true;
+        emit AccessGranted(reader);
+    }
+
+    function revokeAccess(address reader) external onlyOwner {
+        require(authorizedReaders[reader], "Reader not authorized");
+        delete authorizedReaders[reader];
+        emit AccessRevoked(reader);
+    }
+}
