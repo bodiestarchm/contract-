@@ -1,0 +1,38 @@
+# ContractA.starknet
+
+@public
+@payable
+def deposit():
+    # Process deposit logic
+    pass
+
+@public
+def sendMessageToContractB(message: int):
+    # Call ContractB's receiveMessage method to send a message
+    starknet.invoke_contract(
+        contract_address="0xContractBAddress",
+        selector="receiveMessage(uint256)",
+        calldata=message
+    )
+
+# ContractB.starknet
+
+@public
+@payable
+def deposit():
+    # Process deposit logic
+    pass
+
+@public
+def receiveMessage(message: int):
+    # Process received message logic
+    pass
+
+@public
+def sendMessageToContractA(message: int):
+    # Call ContractA's receiveMessage method to send a message
+    starknet.invoke_contract(
+        contract_address="0xContractAAddress",
+        selector="receiveMessage(uint256)",
+        calldata=message
+    )
